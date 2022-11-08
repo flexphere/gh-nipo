@@ -1,11 +1,11 @@
 package pr
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
-	"os/exec"
+	"os"
+
+	"github.com/cli/go-gh"
 )
 
 var (
@@ -26,17 +26,16 @@ func GetReviews() PullRequests {
 }
 
 func execCommand(args []string) []byte {
-	cmd := exec.Command("gh", args...)
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-
+	stdOut, stdErr, err := gh.Exec(args...)
 	if err != nil {
-		log.Fatal(fmt.Sprint(err) + ": " + stderr.String())
+		log.Fatalln(err)
+		os.Exit(1)
 	}
-
-	return stdout.Bytes()
+	if stdErr.Len() > 0 {
+		log.Fatalln(string(stdErr.Bytes()))
+		os.Exit(1)
+	}
+	return stdOut.Bytes()
 }
 
 func unmarshalPRs(data []byte) PullRequests {
@@ -45,6 +44,5 @@ func unmarshalPRs(data []byte) PullRequests {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return prs
 }
