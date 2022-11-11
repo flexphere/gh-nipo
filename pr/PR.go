@@ -8,19 +8,9 @@ import (
 	"github.com/cli/go-gh"
 )
 
-var (
-	ARGS_PULL_REQUESTS    = []string{"pr", "list", "-A", "@me", "-s", "all", "--json", "title,url,updatedAt"}
-	ARGS_REQUESTED_REVIEW = []string{"pr", "list", "-S", "user-review-requested:@me", "-s", "all", "--json", "title,url,updatedAt"}
-)
-
 func GetPRs() PullRequests {
-	out := execCommand(ARGS_PULL_REQUESTS)
-	pullRequests := unmarshalPRs(out)
-	return pullRequests
-}
-
-func GetReviews() PullRequests {
-	out := execCommand(ARGS_REQUESTED_REVIEW)
+	commandArgs := []string{"pr", "list", "-s", "all", "--json", "author,title,url,updatedAt,reviews"}
+	out := execCommand(commandArgs)
 	pullRequests := unmarshalPRs(out)
 	return pullRequests
 }

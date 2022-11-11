@@ -7,15 +7,16 @@ import (
 )
 
 func main() {
-	createdPRs := pr.GetPRs().GetRecents().Select("Your PRs")
-	reviewPRs := pr.GetReviews().GetRecents().Select("Your Reviews")
+	prs := pr.GetPRs()
+	myPRs := prs.GetMyPRs("flexphere").FilterByHours(24).Select("Select PRs")
+	reviewPRs := prs.GetMyReviews("flexphere").FilterByHours(24).Select("Select Reviews")
 
-	if len(createdPRs)+len(reviewPRs) == 0 {
+	if len(myPRs)+len(reviewPRs) == 0 {
 		return
 	}
 
 	fmt.Println(":クラッカー:")
-	for _, pr := range append(createdPRs, reviewPRs...) {
+	for _, pr := range append(myPRs, reviewPRs...) {
 		fmt.Printf("[%s](%s)\n", pr.Title, pr.URL)
 	}
 }
